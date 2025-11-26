@@ -2422,6 +2422,15 @@ def cleanup_orphaned_content(db: Session = Depends(get_db), current_user: User =
         logger.error(f"Orphaned content cleanup error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to cleanup orphaned content")
 
+# =============================================
+# FSRS (Free Spaced Repetition Scheduler) Setup
+# =============================================
+
+from fsrs_endpoints import setup_fsrs_endpoints
+
+# Setup FSRS endpoints with dependency injection
+fsrs_models = setup_fsrs_endpoints(app, Base, get_db, get_current_user, User, Vocabulary, Grammar)
+
 if __name__ == "__main__":
     # Create all tables
     Base.metadata.create_all(bind=engine)
