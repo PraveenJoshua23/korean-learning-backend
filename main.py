@@ -92,6 +92,7 @@ class Vocabulary(Base):
     english = Column(String, nullable=False)
     pronunciation = Column(String, nullable=True)
     examples = Column(Text, nullable=True)  # JSON string
+    image_url = Column(String, nullable=True)
     category = Column(String, default="general")
     difficulty_level = Column(String, default="beginner")  # Changed to string
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -291,6 +292,7 @@ class VocabularyResponse(BaseModel):
     english: str
     pronunciation: Optional[str] = None
     examples: List[str] = []
+    image_url: Optional[str] = None
     category: str
     difficulty_level: str
     created_at: datetime
@@ -323,6 +325,7 @@ class VocabularyCreate(BaseModel):
     english: str
     pronunciation: Optional[str] = None
     examples: List[str] = []
+    image_url: Optional[str] = None
     category: str
     difficulty_level: str
 
@@ -331,6 +334,7 @@ class VocabularyUpdate(BaseModel):
     english: Optional[str] = None
     pronunciation: Optional[str] = None
     examples: Optional[List[str]] = None
+    image_url: Optional[str] = None
     category: Optional[str] = None
     difficulty_level: Optional[str] = None
 
@@ -955,6 +959,7 @@ def get_vocabulary(skip: int = 0, limit: int = 20, search: Optional[str] = None,
             "english": item.english,
             "pronunciation": item.pronunciation,
             "examples": json.loads(item.examples) if item.examples else [],
+            "image_url": item.image_url,
             "category": item.category,
             "difficulty_level": item.difficulty_level,
             "created_at": item.created_at,
@@ -1169,6 +1174,7 @@ def get_vocabulary_item(vocabulary_id: int, db: Session = Depends(get_db), curre
         "english": vocabulary.english,
         "pronunciation": vocabulary.pronunciation,
         "examples": json.loads(vocabulary.examples) if vocabulary.examples else [],
+        "image_url": vocabulary.image_url,
         "category": vocabulary.category,
         "difficulty_level": vocabulary.difficulty_level,
         "created_at": vocabulary.created_at,
@@ -1935,6 +1941,7 @@ def create_vocabulary(vocab: VocabularyCreate, db: Session = Depends(get_db), ad
             english=vocab.english,
             pronunciation=vocab.pronunciation,
             examples=json.dumps(vocab.examples),
+            image_url=vocab.image_url,
             category=vocab.category,
             difficulty_level=vocab.difficulty_level,
             created_at=datetime.utcnow(),
@@ -1952,6 +1959,7 @@ def create_vocabulary(vocab: VocabularyCreate, db: Session = Depends(get_db), ad
             english=new_vocab.english,
             pronunciation=new_vocab.pronunciation,
             examples=vocab.examples,
+            image_url=new_vocab.image_url,
             category=new_vocab.category,
             difficulty_level=new_vocab.difficulty_level,
             created_at=new_vocab.created_at,
@@ -1977,6 +1985,8 @@ def update_vocabulary(vocabulary_id: int, vocab: VocabularyUpdate, db: Session =
             existing_vocab.pronunciation = vocab.pronunciation
         if vocab.examples is not None:
             existing_vocab.examples = json.dumps(vocab.examples)
+        if vocab.image_url is not None:
+            existing_vocab.image_url = vocab.image_url
         if vocab.category is not None:
             existing_vocab.category = vocab.category
         if vocab.difficulty_level is not None:
@@ -1994,6 +2004,7 @@ def update_vocabulary(vocabulary_id: int, vocab: VocabularyUpdate, db: Session =
             english=existing_vocab.english,
             pronunciation=existing_vocab.pronunciation,
             examples=json.loads(existing_vocab.examples) if existing_vocab.examples else [],
+            image_url=existing_vocab.image_url,
             category=existing_vocab.category,
             difficulty_level=existing_vocab.difficulty_level,
             created_at=existing_vocab.created_at,
